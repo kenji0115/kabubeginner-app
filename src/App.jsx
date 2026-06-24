@@ -242,6 +242,22 @@ export default function App() {
         </div>
       </section>
 
+      <section className="card risk-card">
+        <h2>🌱 投資とリスクのこと</h2>
+        <ul className="risk-list">
+          <li>
+            📈 投資は「必ず増える」ものではありません。値上がり・値下がりをくり返しながら、ゆっくり育てていくイメージです。
+          </li>
+          <li>
+            🌧️ 途中でマイナスになる年もあります。でも<strong>長期・積立・分散</strong>を続けると、値動きの振れ幅はやわらぎやすくなります。
+          </li>
+          <li>
+            🧭 大切なのは、<strong>無理のない金額で、あわてて売らずに長く続ける</strong>こと。
+          </li>
+        </ul>
+        <p className="risk-foot">こわがりすぎず、でも油断せず。コツコツ続けるのが近道です。</p>
+      </section>
+
       <footer className="foot">
         <p className="muted">
           ※ 本シミュレーションは想定年率で毎月複利運用した場合の概算です。実際の運用成果を保証するものではありません。

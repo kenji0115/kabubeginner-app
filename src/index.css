@@ -447,6 +447,34 @@ body {
   margin-top: 8px;
 }
 
+/* 投資とリスクのこと */
+.risk-card {
+  background: linear-gradient(135deg, #f0fdf4, #f8fafc);
+  border-color: #bbf7d0;
+}
+
+.risk-list {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.risk-list li {
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+
+.risk-foot {
+  margin: 16px 0 0;
+  padding-top: 14px;
+  border-top: 1px dashed #bbf7d0;
+  font-weight: 700;
+  color: #15803d;
+}
+
 .foot {
   margin-top: 24px;
   text-align: center;
