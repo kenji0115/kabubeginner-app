@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   BarChart,
   Bar,
@@ -26,17 +26,11 @@ const clampMonthly = (v) =>
   Number.isNaN(v) ? MONTHLY_MIN : Math.min(MONTHLY_MAX, Math.max(MONTHLY_MIN, v));
 
 export default function App() {
-  const [monthly, setMonthly] = useState(20000);
-  const [annualRate, setAnnualRate] = useState(5);
+  const [monthly, setMonthly] = useState(5000);
   const [years, setYears] = useState(20);
 
   // 3ステップ診断の選択状態（{ style, stance, region }）
   const [selections, setSelections] = useState({});
-
-  const result = useMemo(
-    () => simulate({ monthly, annualRate, years }),
-    [monthly, annualRate, years]
-  );
 
   // すべてのステップを選び終えたら診断結果を算出する
   const diagnosis = useMemo(() => {
@@ -44,10 +38,13 @@ export default function App() {
     return style && stance && region ? diagnose(selections) : null;
   }, [selections]);
 
-  // 診断が完了したら、おすすめの想定年率を入力に反映する
-  useEffect(() => {
-    if (diagnosis) setAnnualRate(diagnosis.annualRate);
-  }, [diagnosis]);
+  // 想定年率は診断結果から決まる。未診断・やり直し直後は0%。
+  const annualRate = diagnosis ? diagnosis.annualRate : 0;
+
+  const result = useMemo(
+    () => simulate({ monthly, annualRate, years }),
+    [monthly, annualRate, years]
+  );
 
   // ステップの選択。あるステップを選び直したら、それより後ろの選択はリセットする
   const selectOption = (stepIndex, stepKey, value) => {
@@ -133,7 +130,7 @@ export default function App() {
               <span className="profile-style">{diagnosis.style}</span>
               <span className="profile-rate">想定年率 {diagnosis.annualRate}%</span>
             </div>
-            <p className="muted">あなたにおすすめの資産配分です（年率は下の入力に反映済み）。</p>
+            <p className="muted">あなたにおすすめの資産配分です（想定年率は下に反映済み）。</p>
             <AllocationBar allocation={diagnosis.allocation} />
           </div>
         )}
@@ -149,7 +146,7 @@ export default function App() {
               <span className="field-value lg">{annualRate}%</span>
             </div>
             <p className="field-hint">
-              上の「かんたん診断」で決まります（最大10%）。
+              上の「かんたん診断」で決まります。
             </p>
           </div>
 
@@ -189,7 +186,7 @@ export default function App() {
             <input
               type="range"
               min={1}
-              max={40}
+              max={50}
               step={1}
               value={years}
               list="year-ticks"
@@ -204,13 +201,16 @@ export default function App() {
               <option value="30" />
               <option value="35" />
               <option value="40" />
+              <option value="45" />
+              <option value="50" />
             </datalist>
             <div className="scale">
               <span>1年</span>
               <span>10</span>
               <span>20</span>
               <span>30</span>
-              <span>40年</span>
+              <span>40</span>
+              <span>50年</span>
             </div>
           </div>
         </div>
