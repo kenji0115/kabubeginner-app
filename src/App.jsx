@@ -65,6 +65,7 @@ export default function App() {
             >
               <span className="profile-emoji">{p.emoji}</span>
               <span className="profile-label">{p.label}</span>
+              <span className="profile-style">{p.style}</span>
               <span className="profile-rate">想定年率 {p.annualRate}%</span>
               <span className="profile-desc">{p.description}</span>
             </button>

@@ -103,6 +103,21 @@ body {
   font-weight: 700;
 }
 
+.profile-style {
+  align-self: flex-start;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--accent);
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 999px;
+  padding: 2px 10px;
+}
+
+.profile.active .profile-style {
+  background: #dbeafe;
+}
+
 .profile-rate {
   font-size: 0.85rem;
   font-weight: 700;
