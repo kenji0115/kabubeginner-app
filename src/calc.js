@@ -57,52 +57,113 @@ export const ASSET_COLORS = {
 };
 
 /**
- * 診断タイプごとの推奨パラメータ。
- * 診断が決めるのはリスク許容度＝想定年率と、資産配分（ポートフォリオの内訳）。
+ * かんたん診断の3ステップ。
+ * 段階的に選んでいくと、資産配分と想定年率が決まる。
  * 毎月の積立額・期間は人それぞれの事情で決めるものなので診断では扱わない。
- * allocation の合計は 100 になるようにする。
  */
-export const PROFILES = {
-  stable: {
-    key: "stable",
-    label: "安定型",
-    emoji: "🛡️",
-    style: "インデックス投資",
-    description: "市場全体にまるごと分散投資。低コストで値動きもゆるやか。コツコツ派の王道です。",
-    annualRate: 3,
-    allocation: [
-      { name: "米国株", percent: 25 },
-      { name: "日本株", percent: 15 },
-      { name: "債券", percent: 60 },
+export const DIAGNOSIS_STEPS = [
+  {
+    key: "style",
+    question: "1. どんなスタンスで投資したい？",
+    options: [
+      {
+        value: "index",
+        label: "安定志向",
+        emoji: "🛡️",
+        note: "インデックス投資。市場全体に分散して、低コストでコツコツ。",
+      },
+      {
+        value: "active",
+        label: "積極志向",
+        emoji: "🚀",
+        note: "アクティブ投資。銘柄を厳選して市場平均超えを狙う。",
+      },
     ],
   },
-  balanced: {
-    key: "balanced",
-    label: "バランス型",
-    emoji: "⚖️",
-    style: "インデックス＋アクティブ",
-    description: "守りのインデックスに、攻めのアクティブを少し。バランス重視で迷ったらこれ。",
-    annualRate: 5,
-    allocation: [
-      { name: "米国株", percent: 40 },
-      { name: "日本株", percent: 20 },
-      { name: "債券", percent: 40 },
+  {
+    key: "stance",
+    question: "2. その中で、攻め？守り？",
+    options: [
+      {
+        value: "defensive",
+        label: "守りより",
+        emoji: "🛡️",
+        note: "債券を多めにして値動きを抑える。",
+      },
+      {
+        value: "offensive",
+        label: "攻めより",
+        emoji: "🔥",
+        note: "株式を多めにしてリターンを狙う。",
+      },
     ],
   },
-  aggressive: {
-    key: "aggressive",
-    label: "積極型",
-    emoji: "🚀",
-    style: "アクティブ投資",
-    description: "市場平均を上回るリターンを狙って銘柄を厳選。値動きは大きめ、攻めたい人向け。",
-    annualRate: 7,
-    allocation: [
-      { name: "米国株", percent: 55 },
-      { name: "日本株", percent: 30 },
-      { name: "債券", percent: 15 },
+  {
+    key: "region",
+    question: "3. 株式はどこ中心に？",
+    options: [
+      {
+        value: "us",
+        label: "米国中心",
+        emoji: "🇺🇸",
+        note: "成長期待の米国株を厚めに。",
+      },
+      {
+        value: "japan",
+        label: "日本も厚め",
+        emoji: "🇯🇵",
+        note: "なじみのある日本株の比率も上げる。",
+      },
     ],
   },
+];
+
+// ステップ1×2で株式・債券の比率が決まる
+const EQUITY_BOND = {
+  "index|defensive": { equity: 40, bond: 60 },
+  "index|offensive": { equity: 60, bond: 40 },
+  "active|defensive": { equity: 60, bond: 40 },
+  "active|offensive": { equity: 80, bond: 20 },
 };
+
+// ステップ3で株式の中の地域配分が決まる
+const REGION_SPLIT = {
+  us: { us: 0.75, jp: 0.25 },
+  japan: { us: 0.55, jp: 0.45 },
+};
+
+// 想定年率の算出に使う各資産の期待リターン（％）
+const EXPECTED_RETURN = {
+  index: { equity: 7, bond: 1 },
+  active: { equity: 9, bond: 1 },
+};
+
+/**
+ * 3ステップの選択から、投資スタイル・資産配分・想定年率を算出する。
+ * @param {{style:string, stance:string, region:string}} selections
+ */
+export function diagnose({ style, stance, region }) {
+  const eb = EQUITY_BOND[`${style}|${stance}`];
+  const split = REGION_SPLIT[region];
+
+  const usStock = Math.round(eb.equity * split.us);
+  const jpStock = eb.equity - usStock; // 端数は日本株で吸収して合計100に揃える
+  const bond = eb.bond;
+
+  const ret = EXPECTED_RETURN[style];
+  const rawRate = (eb.equity / 100) * ret.equity + (eb.bond / 100) * ret.bond;
+  const annualRate = Math.round(rawRate * 2) / 2; // 0.5刻みに丸める
+
+  return {
+    style: style === "index" ? "インデックス投資" : "アクティブ投資",
+    annualRate,
+    allocation: [
+      { name: "米国株", percent: usStock },
+      { name: "日本株", percent: jpStock },
+      { name: "債券", percent: bond },
+    ],
+  };
+}
 
 /** 円を「1,234万円」「1,234円」のように整形 */
 export function formatYen(value) {

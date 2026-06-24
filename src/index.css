@@ -60,15 +60,48 @@ body {
   font-size: 0.9rem;
 }
 
-/* 診断ボタン */
-.profiles {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
+/* カード見出し（タイトル＋やり直すボタン） */
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.reset {
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.reset:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* 段階式の診断ステップ */
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   margin-top: 12px;
 }
 
-.profile {
+.step-q {
+  margin: 0 0 8px;
+  font-weight: 700;
+}
+
+.step-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.step-option {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -82,29 +115,49 @@ body {
   transition: border-color 0.15s, transform 0.05s;
 }
 
-.profile:hover {
+.step-option:hover {
   border-color: var(--accent);
 }
 
-.profile:active {
+.step-option:active {
   transform: scale(0.99);
 }
 
-.profile.active {
+.step-option.active {
   border-color: var(--accent);
   background: #eff6ff;
 }
 
-.profile-emoji {
+.step-emoji {
   font-size: 1.6rem;
 }
 
-.profile-label {
+.step-label {
   font-weight: 700;
 }
 
+.step-note {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+/* 診断結果 */
+.diag-result {
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.diag-result-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
 .profile-style {
-  align-self: flex-start;
   font-size: 0.78rem;
   font-weight: 700;
   color: var(--accent);
@@ -114,20 +167,11 @@ body {
   padding: 2px 10px;
 }
 
-.profile.active .profile-style {
-  background: #dbeafe;
-}
-
 .profile-rate {
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: var(--accent);
   font-variant-numeric: tabular-nums;
-}
-
-.profile-desc {
-  font-size: 0.82rem;
-  color: var(--muted);
 }
 
 /* 資産配分バー */

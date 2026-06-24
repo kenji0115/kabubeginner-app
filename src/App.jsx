@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   BarChart,
   Bar,
@@ -9,7 +9,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { simulate, PROFILES, ASSET_COLORS, formatYen } from "./calc.js";
+import { simulate, diagnose, DIAGNOSIS_STEPS, ASSET_COLORS, formatYen } from "./calc.js";
 
 const COLORS = {
   principal: "#60a5fa", // 元本
@@ -20,25 +20,38 @@ export default function App() {
   const [monthly, setMonthly] = useState(20000);
   const [annualRate, setAnnualRate] = useState(5);
   const [years, setYears] = useState(20);
-  const [activeProfile, setActiveProfile] = useState(null);
+
+  // 3ステップ診断の選択状態（{ style, stance, region }）
+  const [selections, setSelections] = useState({});
 
   const result = useMemo(
     () => simulate({ monthly, annualRate, years }),
     [monthly, annualRate, years]
   );
 
-  // 診断はリスク許容度＝想定年率のみを決める。
-  // 毎月の積立額・期間は人それぞれの事情で決めるものなので上書きしない。
-  const applyProfile = (profile) => {
-    setAnnualRate(profile.annualRate);
-    setActiveProfile(profile.key);
+  // すべてのステップを選び終えたら診断結果を算出する
+  const diagnosis = useMemo(() => {
+    const { style, stance, region } = selections;
+    return style && stance && region ? diagnose(selections) : null;
+  }, [selections]);
+
+  // 診断が完了したら、おすすめの想定年率を入力に反映する
+  useEffect(() => {
+    if (diagnosis) setAnnualRate(diagnosis.annualRate);
+  }, [diagnosis]);
+
+  // ステップの選択。あるステップを選び直したら、それより後ろの選択はリセットする
+  const selectOption = (stepIndex, stepKey, value) => {
+    setSelections((prev) => {
+      const next = { ...prev, [stepKey]: value };
+      for (let i = stepIndex + 1; i < DIAGNOSIS_STEPS.length; i++) {
+        delete next[DIAGNOSIS_STEPS[i].key];
+      }
+      return next;
+    });
   };
 
-  // 年率を手動変更したら診断の選択状態を解除する
-  const handleRateChange = (value) => {
-    setActiveProfile(null);
-    setAnnualRate(value);
-  };
+  const resetDiagnosis = () => setSelections({});
 
   return (
     <div className="app">
@@ -52,26 +65,56 @@ export default function App() {
       </header>
 
       <section className="card">
-        <h2>かんたん診断</h2>
-        <p className="muted">
-          タイプを選ぶと、おすすめの<strong>想定年率</strong>が入ります。毎月の積立額・期間はご自身で自由に設定できます。
-        </p>
-        <div className="profiles">
-          {Object.values(PROFILES).map((p) => (
-            <button
-              key={p.key}
-              className={`profile ${activeProfile === p.key ? "active" : ""}`}
-              onClick={() => applyProfile(p)}
-            >
-              <span className="profile-emoji">{p.emoji}</span>
-              <span className="profile-label">{p.label}</span>
-              <span className="profile-style">{p.style}</span>
-              <span className="profile-rate">想定年率 {p.annualRate}%</span>
-              <span className="profile-desc">{p.description}</span>
-              <AllocationBar allocation={p.allocation} />
+        <div className="card-head">
+          <h2>かんたん診断</h2>
+          {Object.keys(selections).length > 0 && (
+            <button className="reset" onClick={resetDiagnosis}>
+              やり直す
             </button>
-          ))}
+          )}
         </div>
+        <p className="muted">
+          3つの質問に答えると、<strong>資産配分</strong>と<strong>想定年率</strong>が決まります。毎月の積立額・期間はご自身で自由に設定できます。
+        </p>
+
+        <div className="steps">
+          {DIAGNOSIS_STEPS.map((step, i) => {
+            // 前のステップが未選択ならまだ表示しない（段階的に出す）
+            const prevDone = i === 0 || selections[DIAGNOSIS_STEPS[i - 1].key];
+            if (!prevDone) return null;
+            return (
+              <div className="step" key={step.key}>
+                <p className="step-q">{step.question}</p>
+                <div className="step-options">
+                  {step.options.map((opt) => (
+                    <button
+                      key={opt.value}
+                      className={`step-option ${
+                        selections[step.key] === opt.value ? "active" : ""
+                      }`}
+                      onClick={() => selectOption(i, step.key, opt.value)}
+                    >
+                      <span className="step-emoji">{opt.emoji}</span>
+                      <span className="step-label">{opt.label}</span>
+                      <span className="step-note">{opt.note}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {diagnosis && (
+          <div className="diag-result">
+            <div className="diag-result-head">
+              <span className="profile-style">{diagnosis.style}</span>
+              <span className="profile-rate">想定年率 {diagnosis.annualRate}%</span>
+            </div>
+            <p className="muted">あなたにおすすめの資産配分です（年率は下の入力に反映済み）。</p>
+            <AllocationBar allocation={diagnosis.allocation} />
+          </div>
+        )}
       </section>
 
       <section className="card">
@@ -84,7 +127,7 @@ export default function App() {
             min={0}
             max={15}
             step={0.5}
-            onChange={handleRateChange}
+            onChange={setAnnualRate}
           />
           <Field
             label="毎月の積立金額"
