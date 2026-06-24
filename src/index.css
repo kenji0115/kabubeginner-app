@@ -300,17 +300,71 @@ body {
   margin-top: 8px;
 }
 
-.field label {
+.field-top {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
+  margin-bottom: 8px;
+}
+
+.field-name {
   font-weight: 600;
-  margin-bottom: 6px;
 }
 
 .field-value {
   color: var(--accent);
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
+}
+
+.field-value.lg {
+  font-size: 1.5rem;
+}
+
+.field-hint {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+/* 金額プリセット */
+.presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.preset {
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.preset:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.preset.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* スライダーの目盛りラベル */
+.scale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  font-size: 0.72rem;
+  color: var(--muted);
 }
 
 .field input[type="range"] {

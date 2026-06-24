@@ -16,6 +16,15 @@ const COLORS = {
   profit: "#34d399", // 運用益
 };
 
+// 毎月の積立金額のプリセット（初心者向けに上限5万円）
+const MONTHLY_PRESETS = [5000, 10000, 30000, 50000];
+const MONTHLY_MIN = 1000;
+const MONTHLY_MAX = 50000;
+
+const yen = (v) => new Intl.NumberFormat("ja-JP").format(v);
+const clampMonthly = (v) =>
+  Number.isNaN(v) ? MONTHLY_MIN : Math.min(MONTHLY_MAX, Math.max(MONTHLY_MIN, v));
+
 export default function App() {
   const [monthly, setMonthly] = useState(20000);
   const [annualRate, setAnnualRate] = useState(5);
@@ -133,33 +142,77 @@ export default function App() {
       <section className="card">
         <h2>入力</h2>
         <div className="fields">
-          <Field
-            label="想定年率"
-            unit="%"
-            value={annualRate}
-            min={0}
-            max={15}
-            step={0.5}
-            onChange={setAnnualRate}
-          />
-          <Field
-            label="毎月の積立金額"
-            unit="円"
-            value={monthly}
-            min={1000}
-            max={100000}
-            step={1000}
-            onChange={setMonthly}
-          />
-          <Field
-            label="積立期間"
-            unit="年"
-            value={years}
-            min={1}
-            max={40}
-            step={1}
-            onChange={setYears}
-          />
+          {/* 想定年率：かんたん診断で決まる固定表示 */}
+          <div className="field">
+            <div className="field-top">
+              <span className="field-name">想定年率</span>
+              <span className="field-value lg">{annualRate}%</span>
+            </div>
+            <p className="field-hint">
+              上の「かんたん診断」で決まります（最大10%）。
+            </p>
+          </div>
+
+          {/* 毎月の積立金額：プリセット＋自由入力 */}
+          <div className="field">
+            <div className="field-top">
+              <span className="field-name">毎月の積立金額</span>
+              <span className="field-value">{yen(monthly)}円</span>
+            </div>
+            <div className="presets">
+              {MONTHLY_PRESETS.map((v) => (
+                <button
+                  key={v}
+                  className={`preset ${monthly === v ? "active" : ""}`}
+                  onClick={() => setMonthly(v)}
+                >
+                  {yen(v)}円
+                </button>
+              ))}
+            </div>
+            <input
+              type="number"
+              min={MONTHLY_MIN}
+              max={MONTHLY_MAX}
+              step={1000}
+              value={monthly}
+              onChange={(e) => setMonthly(clampMonthly(Number(e.target.value)))}
+            />
+          </div>
+
+          {/* 積立期間：目盛り付きスライダー */}
+          <div className="field">
+            <div className="field-top">
+              <span className="field-name">積立期間</span>
+              <span className="field-value">{years}年</span>
+            </div>
+            <input
+              type="range"
+              min={1}
+              max={40}
+              step={1}
+              value={years}
+              list="year-ticks"
+              onChange={(e) => setYears(Number(e.target.value))}
+            />
+            <datalist id="year-ticks">
+              <option value="5" />
+              <option value="10" />
+              <option value="15" />
+              <option value="20" />
+              <option value="25" />
+              <option value="30" />
+              <option value="35" />
+              <option value="40" />
+            </datalist>
+            <div className="scale">
+              <span>1年</span>
+              <span>10</span>
+              <span>20</span>
+              <span>30</span>
+              <span>40年</span>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -222,36 +275,6 @@ function AllocationBar({ allocation }) {
         ))}
       </span>
     </span>
-  );
-}
-
-function Field({ label, unit, value, min, max, step, onChange }) {
-  return (
-    <div className="field">
-      <label>
-        {label}
-        <span className="field-value">
-          {new Intl.NumberFormat("ja-JP").format(value)}
-          {unit}
-        </span>
-      </label>
-      <input
-        type="range"
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-      />
-      <input
-        type="number"
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-      />
-    </div>
   );
 }
 
