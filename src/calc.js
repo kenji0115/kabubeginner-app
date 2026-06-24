@@ -144,11 +144,18 @@ const REGION_SPLIT = {
   japan: { us: 0.55, jp: 0.45 },
 };
 
-// 想定年率の算出に使う各資産の期待リターン（％）
-const EXPECTED_RETURN = {
-  index: { equity: 7, bond: 1 },
-  active: { equity: 9, bond: 1 },
+// 想定年率の根拠：GPIF（年金積立金管理運用独立行政法人）が基本ポートフォリオ
+// 策定時に用いた期待リターン（名目, 経済中位ケース）を参考にした概算値。
+//   外国株式 ≈ 7.2% / 国内株式 ≈ 5.6% / 国内債券 ≈ 0.7%
+// 株式の期待リターンは「どこの株か（ステップ3）」で変える：米国 ＞ 全世界 ＞ 日本。
+const EQUITY_RETURN_BY_REGION = {
+  us: 7, // 米国中心（外国株式 ≈ 7.2% を参考）＝攻め
+  world: 6, // 全世界株（外国＋国内のブレンド）＝バランス
+  japan: 5, // 日本厚め（国内株式 ≈ 5.6% を参考）＝守り
 };
+// アクティブは市場平均超えを狙う分、株式リターンに上乗せ（簡易な想定）
+const ACTIVE_PREMIUM = 1;
+const BOND_RETURN = 1; // 債券（国内債券 ≈ 0.7% を参考）
 
 /**
  * 3ステップの選択から、投資スタイル・資産配分・想定年率を算出する。
@@ -157,8 +164,9 @@ const EXPECTED_RETURN = {
 export function diagnose({ style, stance, region }) {
   const eb = EQUITY_BOND[stance];
 
-  const ret = EXPECTED_RETURN[style];
-  const rawRate = (eb.equity / 100) * ret.equity + (eb.bond / 100) * ret.bond;
+  const equityReturn =
+    EQUITY_RETURN_BY_REGION[region] + (style === "active" ? ACTIVE_PREMIUM : 0);
+  const rawRate = (eb.equity / 100) * equityReturn + (eb.bond / 100) * BOND_RETURN;
   const annualRate = Math.round(rawRate * 2) / 2; // 0.5刻みに丸める
 
   let allocation;

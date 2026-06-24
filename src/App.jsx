@@ -179,6 +179,8 @@ export default function App() {
       <footer className="foot">
         <p className="muted">
           ※ 本シミュレーションは想定年率で毎月複利運用した場合の概算です。実際の運用成果を保証するものではありません。
+          <br />
+          想定年率はGPIF（年金積立金管理運用独立行政法人）が公表する期待リターンを参考にした概算値です。
         </p>
       </footer>
     </div>
