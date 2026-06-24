@@ -130,6 +130,45 @@ body {
   color: var(--muted);
 }
 
+/* 資産配分バー */
+.alloc {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.alloc-bar {
+  display: flex;
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.alloc-seg {
+  height: 100%;
+}
+
+.alloc-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin-top: 6px;
+  font-size: 0.74rem;
+  color: var(--muted);
+}
+
+.alloc-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.alloc-item .dot {
+  width: 8px;
+  height: 8px;
+}
+
 /* 入力フィールド */
 .fields {
   display: grid;

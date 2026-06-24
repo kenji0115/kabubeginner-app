@@ -9,7 +9,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { simulate, PROFILES, formatYen } from "./calc.js";
+import { simulate, PROFILES, ASSET_COLORS, formatYen } from "./calc.js";
 
 const COLORS = {
   principal: "#60a5fa", // 元本
@@ -68,6 +68,7 @@ export default function App() {
               <span className="profile-style">{p.style}</span>
               <span className="profile-rate">想定年率 {p.annualRate}%</span>
               <span className="profile-desc">{p.description}</span>
+              <AllocationBar allocation={p.allocation} />
             </button>
           ))}
         </div>
@@ -77,15 +78,6 @@ export default function App() {
         <h2>入力</h2>
         <div className="fields">
           <Field
-            label="毎月の積立金額"
-            unit="円"
-            value={monthly}
-            min={1000}
-            max={100000}
-            step={1000}
-            onChange={setMonthly}
-          />
-          <Field
             label="想定年率"
             unit="%"
             value={annualRate}
@@ -93,6 +85,15 @@ export default function App() {
             max={15}
             step={0.5}
             onChange={handleRateChange}
+          />
+          <Field
+            label="毎月の積立金額"
+            unit="円"
+            value={monthly}
+            min={1000}
+            max={100000}
+            step={1000}
+            onChange={setMonthly}
           />
           <Field
             label="積立期間"
@@ -138,6 +139,31 @@ export default function App() {
         </p>
       </footer>
     </div>
+  );
+}
+
+function AllocationBar({ allocation }) {
+  return (
+    <span className="alloc">
+      <span className="alloc-bar">
+        {allocation.map((a) => (
+          <span
+            key={a.name}
+            className="alloc-seg"
+            style={{ width: `${a.percent}%`, background: ASSET_COLORS[a.name] }}
+            title={`${a.name} ${a.percent}%`}
+          />
+        ))}
+      </span>
+      <span className="alloc-legend">
+        {allocation.map((a) => (
+          <span key={a.name} className="alloc-item">
+            <span className="dot" style={{ background: ASSET_COLORS[a.name] }} />
+            {a.name} {a.percent}%
+          </span>
+        ))}
+      </span>
+    </span>
   );
 }
 

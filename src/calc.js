@@ -49,10 +49,18 @@ export function simulate({ monthly, annualRate, years }) {
   };
 }
 
+// 資産クラスごとの表示色（カード間で色を統一する）
+export const ASSET_COLORS = {
+  米国株: "#3b82f6",
+  日本株: "#ef4444",
+  債券: "#94a3b8",
+};
+
 /**
  * 診断タイプごとの推奨パラメータ。
- * 診断が決めるのはリスク許容度＝想定年率のみ。
+ * 診断が決めるのはリスク許容度＝想定年率と、資産配分（ポートフォリオの内訳）。
  * 毎月の積立額・期間は人それぞれの事情で決めるものなので診断では扱わない。
+ * allocation の合計は 100 になるようにする。
  */
 export const PROFILES = {
   stable: {
@@ -62,6 +70,11 @@ export const PROFILES = {
     style: "インデックス投資",
     description: "市場全体にまるごと分散投資。低コストで値動きもゆるやか。コツコツ派の王道です。",
     annualRate: 3,
+    allocation: [
+      { name: "米国株", percent: 25 },
+      { name: "日本株", percent: 15 },
+      { name: "債券", percent: 60 },
+    ],
   },
   balanced: {
     key: "balanced",
@@ -70,6 +83,11 @@ export const PROFILES = {
     style: "インデックス＋アクティブ",
     description: "守りのインデックスに、攻めのアクティブを少し。バランス重視で迷ったらこれ。",
     annualRate: 5,
+    allocation: [
+      { name: "米国株", percent: 40 },
+      { name: "日本株", percent: 20 },
+      { name: "債券", percent: 40 },
+    ],
   },
   aggressive: {
     key: "aggressive",
@@ -78,6 +96,11 @@ export const PROFILES = {
     style: "アクティブ投資",
     description: "市場平均を上回るリターンを狙って銘柄を厳選。値動きは大きめ、攻めたい人向け。",
     annualRate: 7,
+    allocation: [
+      { name: "米国株", percent: 55 },
+      { name: "日本株", percent: 30 },
+      { name: "債券", percent: 15 },
+    ],
   },
 };
 
