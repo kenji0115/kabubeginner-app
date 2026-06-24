@@ -15,7 +15,8 @@
 
 body {
   margin: 0;
-  background: var(--bg);
+  background: linear-gradient(180deg, #e0e7ff 0%, var(--bg) 280px);
+  background-attachment: fixed;
   color: var(--text);
   line-height: 1.6;
 }
@@ -28,26 +29,44 @@ body {
 
 .hero {
   text-align: center;
-  padding: 24px 0 8px;
+  margin-top: 8px;
+  padding: 40px 24px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+  color: #fff;
+  box-shadow: 0 12px 32px rgba(37, 99, 235, 0.28);
 }
 
 .hero h1 {
-  margin: 0 0 8px;
-  font-size: 1.8rem;
+  margin: 0 0 10px;
+  font-size: 1.9rem;
 }
 
 .hero p {
   margin: 0;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.95rem;
 }
 
 .card {
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 16px;
-  padding: 20px;
+  padding: 22px;
   margin-top: 20px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  animation: fadeInUp 0.3s ease both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .card h2 {
@@ -90,8 +109,35 @@ body {
   margin-top: 12px;
 }
 
+.step {
+  animation: fadeInUp 0.25s ease both;
+}
+
 .step-q {
-  margin: 0 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+  font-weight: 700;
+}
+
+.step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.step-done {
+  margin-left: auto;
+  color: #16a34a;
+  font-size: 0.8rem;
   font-weight: 700;
 }
 
@@ -102,30 +148,34 @@ body {
 }
 
 .step-option {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 4px;
   text-align: left;
-  padding: 14px;
+  padding: 16px 14px;
   border: 2px solid var(--border);
   border-radius: 12px;
   background: #fff;
   cursor: pointer;
-  transition: border-color 0.15s, transform 0.05s;
+  transition: border-color 0.15s, transform 0.08s, box-shadow 0.15s;
 }
 
 .step-option:hover {
   border-color: var(--accent);
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.12);
+  transform: translateY(-2px);
 }
 
 .step-option:active {
-  transform: scale(0.99);
+  transform: translateY(0) scale(0.99);
 }
 
 .step-option.active {
   border-color: var(--accent);
   background: #eff6ff;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.16);
 }
 
 .step-emoji {
@@ -136,18 +186,48 @@ body {
   font-weight: 700;
 }
 
+.step-check {
+  margin-left: 6px;
+  color: var(--accent);
+}
+
 .step-note {
   font-size: 0.82rem;
   color: var(--muted);
 }
 
+/* おすすめリボン */
+.ribbon {
+  position: absolute;
+  top: -11px;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #7c2d12;
+  background: linear-gradient(135deg, #fde68a, #fbbf24);
+  border: 1px solid #f59e0b;
+  border-radius: 999px;
+  padding: 3px 10px;
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.35);
+  white-space: nowrap;
+}
+
 /* 診断結果 */
 .diag-result {
   margin-top: 20px;
-  padding: 16px;
+  padding: 18px;
   border: 1px solid #bfdbfe;
   border-radius: 12px;
-  background: #f8fafc;
+  background: linear-gradient(135deg, #eff6ff, #f8fafc);
+  animation: fadeInUp 0.3s ease both;
+}
+
+.diag-title {
+  margin: 0 0 10px;
+  font-weight: 700;
+  font-size: 1.05rem;
 }
 
 .diag-result-head {
@@ -235,7 +315,9 @@ body {
 
 .field input[type="range"] {
   width: 100%;
+  height: 6px;
   accent-color: var(--accent);
+  cursor: pointer;
 }
 
 .field input[type="number"] {
@@ -245,6 +327,13 @@ body {
   border: 1px solid var(--border);
   border-radius: 8px;
   font-size: 1rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.field input[type="number"]:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 /* サマリー */
@@ -265,9 +354,14 @@ body {
 }
 
 .stat.emphasis {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  border: none;
   color: #fff;
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.25);
+}
+
+.stat.emphasis .stat-value {
+  font-size: 1.5rem;
 }
 
 .stat-label {

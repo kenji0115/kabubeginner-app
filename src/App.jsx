@@ -82,23 +82,35 @@ export default function App() {
             // 前のステップが未選択ならまだ表示しない（段階的に出す）
             const prevDone = i === 0 || selections[DIAGNOSIS_STEPS[i - 1].key];
             if (!prevDone) return null;
+            const answered = Boolean(selections[step.key]);
             return (
               <div className="step" key={step.key}>
-                <p className="step-q">{step.question}</p>
+                <p className="step-q">
+                  <span className="step-num">{i + 1}</span>
+                  {step.question}
+                  {answered && <span className="step-done">✓ 選択済み</span>}
+                </p>
                 <div className="step-options">
-                  {step.options.map((opt) => (
-                    <button
-                      key={opt.value}
-                      className={`step-option ${
-                        selections[step.key] === opt.value ? "active" : ""
-                      }`}
-                      onClick={() => selectOption(i, step.key, opt.value)}
-                    >
-                      <span className="step-emoji">{opt.emoji}</span>
-                      <span className="step-label">{opt.label}</span>
-                      <span className="step-note">{opt.note}</span>
-                    </button>
-                  ))}
+                  {step.options.map((opt) => {
+                    const isActive = selections[step.key] === opt.value;
+                    return (
+                      <button
+                        key={opt.value}
+                        className={`step-option ${isActive ? "active" : ""}`}
+                        onClick={() => selectOption(i, step.key, opt.value)}
+                      >
+                        {opt.recommended && (
+                          <span className="ribbon">⭐ {opt.recommended}</span>
+                        )}
+                        <span className="step-emoji">{opt.emoji}</span>
+                        <span className="step-label">
+                          {opt.label}
+                          {isActive && <span className="step-check">✓</span>}
+                        </span>
+                        <span className="step-note">{opt.note}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             );
@@ -107,6 +119,7 @@ export default function App() {
 
         {diagnosis && (
           <div className="diag-result">
+            <p className="diag-title">🎉 診断結果</p>
             <div className="diag-result-head">
               <span className="profile-style">{diagnosis.style}</span>
               <span className="profile-rate">想定年率 {diagnosis.annualRate}%</span>

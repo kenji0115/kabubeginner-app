@@ -65,13 +65,14 @@ export const ASSET_COLORS = {
 export const DIAGNOSIS_STEPS = [
   {
     key: "style",
-    question: "1. どんなスタンスで投資したい？",
+    question: "どんなスタンスで投資したい？",
     options: [
       {
         value: "index",
         label: "安定志向",
         emoji: "🛡️",
         note: "インデックス投資。市場全体に分散して、低コストでコツコツ。",
+        recommended: "長期投資ならこれ！",
       },
       {
         value: "active",
@@ -83,7 +84,7 @@ export const DIAGNOSIS_STEPS = [
   },
   {
     key: "stance",
-    question: "2. その中で、攻め？守り？",
+    question: "その中で、攻め？守り？",
     options: [
       {
         value: "defensive",
@@ -107,7 +108,7 @@ export const DIAGNOSIS_STEPS = [
   },
   {
     key: "region",
-    question: "3. 株式はどこ中心に？",
+    question: "株式はどこ中心に？",
     options: [
       {
         value: "us",
