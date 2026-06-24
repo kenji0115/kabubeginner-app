@@ -53,6 +53,7 @@ export function simulate({ monthly, annualRate, years }) {
 export const ASSET_COLORS = {
   米国株: "#3b82f6",
   日本株: "#ef4444",
+  全世界株: "#10b981",
   債券: "#94a3b8",
 };
 
@@ -88,13 +89,19 @@ export const DIAGNOSIS_STEPS = [
         value: "defensive",
         label: "守りより",
         emoji: "🛡️",
-        note: "債券を多めにして値動きを抑える。",
+        note: "株式40%・債券60%。値動きを抑えてコツコツ。",
+      },
+      {
+        value: "balanced",
+        label: "バランス",
+        emoji: "⚖️",
+        note: "株式60%・債券40%。リスクとリターンのバランス重視。",
       },
       {
         value: "offensive",
         label: "攻めより",
         emoji: "🔥",
-        note: "株式を多めにしてリターンを狙う。",
+        note: "株式90%・債券10%。リターンをしっかり狙う。",
       },
     ],
   },
@@ -114,16 +121,21 @@ export const DIAGNOSIS_STEPS = [
         emoji: "🇯🇵",
         note: "なじみのある日本株の比率も上げる。",
       },
+      {
+        value: "world",
+        label: "全世界株",
+        emoji: "🌍",
+        note: "1本で全世界に分散（通称オルカン）。迷ったらこれ。",
+      },
     ],
   },
 ];
 
-// ステップ1×2で株式・債券の比率が決まる
+// ステップ2（攻め・守り）で株式・債券の比率が決まる
 const EQUITY_BOND = {
-  "index|defensive": { equity: 40, bond: 60 },
-  "index|offensive": { equity: 60, bond: 40 },
-  "active|defensive": { equity: 60, bond: 40 },
-  "active|offensive": { equity: 80, bond: 20 },
+  defensive: { equity: 40, bond: 60 },
+  balanced: { equity: 60, bond: 40 },
+  offensive: { equity: 90, bond: 10 },
 };
 
 // ステップ3で株式の中の地域配分が決まる
@@ -143,25 +155,34 @@ const EXPECTED_RETURN = {
  * @param {{style:string, stance:string, region:string}} selections
  */
 export function diagnose({ style, stance, region }) {
-  const eb = EQUITY_BOND[`${style}|${stance}`];
-  const split = REGION_SPLIT[region];
-
-  const usStock = Math.round(eb.equity * split.us);
-  const jpStock = eb.equity - usStock; // 端数は日本株で吸収して合計100に揃える
-  const bond = eb.bond;
+  const eb = EQUITY_BOND[stance];
 
   const ret = EXPECTED_RETURN[style];
   const rawRate = (eb.equity / 100) * ret.equity + (eb.bond / 100) * ret.bond;
   const annualRate = Math.round(rawRate * 2) / 2; // 0.5刻みに丸める
 
+  let allocation;
+  if (region === "world") {
+    // 全世界株（オルカン）は1本で分散するので、株式はまとめて1区分にする
+    allocation = [
+      { name: "全世界株", percent: eb.equity },
+      { name: "債券", percent: eb.bond },
+    ];
+  } else {
+    const split = REGION_SPLIT[region];
+    const usStock = Math.round(eb.equity * split.us);
+    const jpStock = eb.equity - usStock; // 端数は日本株で吸収して合計100に揃える
+    allocation = [
+      { name: "米国株", percent: usStock },
+      { name: "日本株", percent: jpStock },
+      { name: "債券", percent: eb.bond },
+    ];
+  }
+
   return {
     style: style === "index" ? "インデックス投資" : "アクティブ投資",
     annualRate,
-    allocation: [
-      { name: "米国株", percent: usStock },
-      { name: "日本株", percent: jpStock },
-      { name: "債券", percent: bond },
-    ],
+    allocation,
   };
 }
 
