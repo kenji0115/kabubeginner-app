@@ -447,6 +447,91 @@ body {
   margin-top: 8px;
 }
 
+/* 結果カードの操作ボタン（共有・画像保存） */
+.result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.action {
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.action:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* 複利の転換点メッセージ */
+.crossover-note {
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  color: #92400e;
+}
+
+/* 用語ミニ解説 */
+.glossary {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.glossary-item {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.glossary-item summary {
+  padding: 12px 14px;
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none;
+  position: relative;
+}
+
+.glossary-item summary::after {
+  content: "＋";
+  position: absolute;
+  right: 14px;
+  color: var(--accent);
+}
+
+.glossary-item[open] summary::after {
+  content: "－";
+}
+
+.glossary-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.glossary-item p {
+  margin: 0;
+  padding: 0 14px 14px;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+/* キーボード操作時のフォーカス表示 */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 /* 投資とリスクのこと */
 .risk-card {
   background: linear-gradient(135deg, #f0fdf4, #f8fafc);

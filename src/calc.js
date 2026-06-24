@@ -195,7 +195,26 @@ export function diagnose({ style, stance, region }) {
   };
 }
 
-/** 円を「1,234万円」「1,234円」のように整形 */
+/** 円を「1,234,567円」のように整形（正確な金額用） */
 export function formatYen(value) {
   return new Intl.NumberFormat("ja-JP").format(Math.round(value)) + "円";
+}
+
+/**
+ * 円を「約1,340万円」「1億3,400万円」のように読みやすく整形（読みやすさ重視）。
+ * 1万円未満は円表示、ちょうど割り切れる場合は「約」を付けない。
+ */
+export function formatMan(value) {
+  const v = Math.round(value);
+  const fmt = (n) => new Intl.NumberFormat("ja-JP").format(n);
+  if (v < 10000) return fmt(v) + "円";
+
+  const approx = v % 10000 === 0 ? "" : "約";
+  const manTotal = Math.round(v / 10000); // 万円単位の総額
+  const oku = Math.floor(manTotal / 10000); // 億の桁
+  if (oku >= 1) {
+    const manRemain = manTotal - oku * 10000;
+    return approx + fmt(oku) + "億" + (manRemain > 0 ? fmt(manRemain) + "万円" : "円");
+  }
+  return approx + fmt(manTotal) + "万円";
 }
