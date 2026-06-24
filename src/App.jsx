@@ -27,17 +27,17 @@ export default function App() {
     [monthly, annualRate, years]
   );
 
+  // 診断はリスク許容度＝想定年率のみを決める。
+  // 毎月の積立額・期間は人それぞれの事情で決めるものなので上書きしない。
   const applyProfile = (profile) => {
-    setMonthly(profile.monthly);
     setAnnualRate(profile.annualRate);
-    setYears(profile.years);
     setActiveProfile(profile.key);
   };
 
-  // 入力を手動変更したら診断の選択状態を解除する
-  const handleChange = (setter) => (value) => {
+  // 年率を手動変更したら診断の選択状態を解除する
+  const handleRateChange = (value) => {
     setActiveProfile(null);
-    setter(value);
+    setAnnualRate(value);
   };
 
   return (
@@ -53,7 +53,9 @@ export default function App() {
 
       <section className="card">
         <h2>かんたん診断</h2>
-        <p className="muted">タイプを選ぶと、おすすめの設定が自動で入ります。</p>
+        <p className="muted">
+          タイプを選ぶと、おすすめの<strong>想定年率</strong>が入ります。毎月の積立額・期間はご自身で自由に設定できます。
+        </p>
         <div className="profiles">
           {Object.values(PROFILES).map((p) => (
             <button
@@ -63,6 +65,7 @@ export default function App() {
             >
               <span className="profile-emoji">{p.emoji}</span>
               <span className="profile-label">{p.label}</span>
+              <span className="profile-rate">想定年率 {p.annualRate}%</span>
               <span className="profile-desc">{p.description}</span>
             </button>
           ))}
@@ -79,7 +82,7 @@ export default function App() {
             min={1000}
             max={100000}
             step={1000}
-            onChange={handleChange(setMonthly)}
+            onChange={setMonthly}
           />
           <Field
             label="想定年率"
@@ -88,7 +91,7 @@ export default function App() {
             min={0}
             max={15}
             step={0.5}
-            onChange={handleChange(setAnnualRate)}
+            onChange={handleRateChange}
           />
           <Field
             label="積立期間"
@@ -97,7 +100,7 @@ export default function App() {
             min={1}
             max={40}
             step={1}
-            onChange={handleChange(setYears)}
+            onChange={setYears}
           />
         </div>
       </section>

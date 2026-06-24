@@ -51,7 +51,8 @@ export function simulate({ monthly, annualRate, years }) {
 
 /**
  * 診断タイプごとの推奨パラメータ。
- * 質問への回答から最も近いタイプを返す想定のプリセット。
+ * 診断が決めるのはリスク許容度＝想定年率のみ。
+ * 毎月の積立額・期間は人それぞれの事情で決めるものなので診断では扱わない。
  */
 export const PROFILES = {
   stable: {
@@ -59,27 +60,21 @@ export const PROFILES = {
     label: "安定型",
     emoji: "🛡️",
     description: "値動きを抑えてコツコツ。リスクを取りたくない人向け。",
-    monthly: 10000,
     annualRate: 3,
-    years: 20,
   },
   balanced: {
     key: "balanced",
     label: "バランス型",
     emoji: "⚖️",
     description: "リスクとリターンのバランス重視。迷ったらこれ。",
-    monthly: 20000,
     annualRate: 5,
-    years: 25,
   },
   aggressive: {
     key: "aggressive",
     label: "積極型",
     emoji: "🚀",
     description: "高いリターンを狙う。値動きの大きさを許容できる人向け。",
-    monthly: 30000,
     annualRate: 7,
-    years: 30,
   },
 };
 
